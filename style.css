@@ -1,0 +1,18 @@
+* {
+  font-family: sans-serif;
+}
+
+h3 {
+  margin: 0;
+  padding: 0;
+}
+
+label {
+  user-select: none;
+}
+
+button {
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+}

@@ -1,42 +1,45 @@
 const cnv = document.querySelector("canvas");
 const ctx = cnv.getContext("2d");
 
-function sigmoid(x) {
-  return 1 / (1 + Math.pow(Math.e, -x));
-}
-
 const TWO_PI = Math.PI * 2;
 const QUARTER_PI = Math.PI / 4;
 const EIGHT_PI = Math.PI / 8;
 
-function getColor(_x) {
-  const x = _x * TWO_PI;
+// Mapping values from 0-1 to the RGB colorspace
+function getColorByMap(growthSpeed) {
+  const x = Math.log(growthSpeed) / COLOR_MULT * TWO_PI;
 
-  return {
+  const color = {
     r: 255 - Math.abs(Math.sin(x) * 255),
     g: 255 - Math.abs(Math.sin(x + EIGHT_PI) * 255),
     b: 255 - Math.abs(Math.sin(x + QUARTER_PI) * 255)
   };
+
+  return `rgb(${ color.r }, ${ color.g }, ${ color.b })`;
 }
 
+function getColorNormal(growthSpeed) {
+  let color = "blue";
+
+  if (growthSpeed <= 0.05) {
+    color = "black";
+  } else if (growthSpeed <= 0.1) {
+    color = "red";
+  } else if (growthSpeed <= 0.5) {
+    color = "orange";
+  } else if (growthSpeed <= 3) {
+    color = "yellow";
+  } else if (growthSpeed <= Math.pow(10, 40)) {
+    color = "darkblue";
+  }
+
+  return color;
+}
+
+let getColor = getColorByMap;
+
 function point(x, y, growthSpeed) {
-  // let color = "blue";
-  const _color = getColor(Math.log(growthSpeed) / 500);
-  const color = `rgb(${ _color.r }, ${ _color.g }, ${ _color.b })`;
-
-  // if (growthSpeed <= 0.05) {
-  //   color = "black";
-  // } else if (growthSpeed <= 0.1) {
-  //   color = "red";
-  // } else if (growthSpeed <= 0.5) {
-  //   color = "orange";
-  // } else if (growthSpeed <= 3) {
-  //   color = "yellow";
-  // } else if (growthSpeed <= Math.pow(10, 40)) {
-  //   color = "darkblue";
-  // }
-
-
+  const color = getColor(growthSpeed);
 
   ctx.fillStyle = color;
   ctx.fillRect(x, y, 1, 1);
@@ -102,19 +105,17 @@ function getGrowthSpeed(c) {
   }
 
   const average = deltas.reduce((a, b) => (a + b)) / deltas.length;
-
-  // console.log(average)
-
   return Math.abs(average);
 }
 
 const WIDTH = cnv.width;
 const HEIGHT = cnv.height;
 
-const SCALE_X = 3;
-const SCALE_Y = 3;
-const OFFSET_X = -0.2;
-const OFFSET_Y = 0;
+let SCALE = 3;
+let OFFSET_X = 0.2;
+let OFFSET_Y = 0;
+let COLOR_MULT = 20;
+
 function draw() {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
@@ -123,8 +124,8 @@ function draw() {
       point(
         x, y,
         getGrowthSpeed(new Complex(
-          ((x / WIDTH + OFFSET_X) * SCALE_X) - SCALE_X / 2,
-          ((y / HEIGHT + OFFSET_Y) * SCALE_Y) - SCALE_Y / 2
+          ((x / WIDTH + -OFFSET_X) * SCALE) - SCALE / 2,
+          ((y / HEIGHT + -OFFSET_Y) * SCALE) - SCALE / 2
         ))
       );
     }
@@ -132,3 +133,30 @@ function draw() {
 }
 
 window.requestAnimationFrame(draw);
+
+const app = new Vue({
+  el: "#app",
+  data: {
+    scale: 3,
+    offsetX: 0.2,
+    offsetY: 0,
+    colorMult: 20,
+    colorMap: false
+  },
+  methods: {
+    apply() {
+      SCALE = Number(this.scale);
+      OFFSET_X = Number(this.offsetX);
+      OFFSET_Y = Number(this.offsetY);
+      COLOR_MULT = Number(this.colorMult);
+
+      if (this.colorMap) {
+        getColor = getColorNormal;
+      } else {
+        getColor = getColorByMap;
+      }
+
+      window.requestAnimationFrame(draw);
+    }
+  }
+});
