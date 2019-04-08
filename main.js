@@ -21,14 +21,20 @@ function getColorByMap(growthSpeed) {
 function getColorNormal(growthSpeed) {
   let color = "blue";
 
-  if (growthSpeed <= 0.05) {
+  if (growthSpeed <= 0.01) {
     color = "black";
+  } else if (growthSpeed <= 0.02) {
+    color = "brown";
+  } else if (growthSpeed <= 0.06) {
+    color = "darkred";
   } else if (growthSpeed <= 0.1) {
     color = "red";
   } else if (growthSpeed <= 0.5) {
     color = "orange";
   } else if (growthSpeed <= 3) {
     color = "yellow";
+  } else if (growthSpeed <= 50) {
+    color = "green";
   } else if (growthSpeed <= Math.pow(10, 40)) {
     color = "darkblue";
   }
@@ -36,7 +42,8 @@ function getColorNormal(growthSpeed) {
   return color;
 }
 
-let getColor = getColorByMap;
+let getColor = getColorNormal;
+// let getColor = getColorByMap;
 
 function point(x, y, growthSpeed) {
   const color = getColor(growthSpeed);
@@ -87,7 +94,7 @@ function z(values, c, depth = 0) {
 }
 
 function getGrowthSpeed(c) {
-  const firstFew = z([new Complex(0, 0)], c, 10);
+  const firstFew = z([new Complex(0, 0)], c, 20);
 
   // The distances between the first and all of
   // the other points
@@ -95,7 +102,7 @@ function getGrowthSpeed(c) {
 
   // Compare first value to all others
   for (let n = 1; n < firstFew.length; n++) {
-    distances.push(firstFew[0].distance(firstFew[n]));
+    distances.push(firstFew[0].distance(firstFew[n])); // !!
   }
 
   const deltas = [];
@@ -141,7 +148,7 @@ const app = new Vue({
     offsetX: 0.2,
     offsetY: 0,
     colorMult: 20,
-    colorMap: false
+    colorMap: true
   },
   methods: {
     apply() {
