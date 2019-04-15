@@ -94,7 +94,7 @@ function z(values, c, depth = 0) {
 }
 
 function getGrowthSpeed(c) {
-  const firstFew = z([new Complex(0, 0)], c, 20);
+  const firstFew = z([new Complex(0, 0)], c, ITERATIONS);
 
   // The distances between the first and all of
   // the other points
@@ -112,16 +112,18 @@ function getGrowthSpeed(c) {
   }
 
   const average = deltas.reduce((a, b) => (a + b)) / deltas.length;
+
   return Math.abs(average);
 }
 
 const WIDTH = cnv.width;
 const HEIGHT = cnv.height;
 
-let SCALE = 3;
 let OFFSET_X = 0.2;
 let OFFSET_Y = 0;
 let COLOR_MULT = 20;
+let ITERATIONS = 20;
+let SCALE = 3;
 
 function draw() {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -131,8 +133,8 @@ function draw() {
       point(
         x, y,
         getGrowthSpeed(new Complex(
-          ((x / WIDTH + -OFFSET_X) * SCALE) - SCALE / 2,
-          ((y / HEIGHT + -OFFSET_Y) * SCALE) - SCALE / 2
+          ((x / WIDTH - OFFSET_X) * SCALE) - SCALE / 2,
+          ((y / HEIGHT - OFFSET_Y) * SCALE) - SCALE / 2
         ))
       );
     }
@@ -144,11 +146,12 @@ window.requestAnimationFrame(draw);
 const app = new Vue({
   el: "#app",
   data: {
-    scale: 3,
-    offsetX: 0.2,
-    offsetY: 0,
-    colorMult: 20,
-    colorMap: true
+    scale: SCALE,
+    offsetX: OFFSET_X,
+    offsetY: OFFSET_Y,
+    colorMult: COLOR_MULT,
+    colorMap: true,
+    iterations: ITERATIONS
   },
   methods: {
     apply() {
@@ -156,6 +159,7 @@ const app = new Vue({
       OFFSET_X = Number(this.offsetX);
       OFFSET_Y = Number(this.offsetY);
       COLOR_MULT = Number(this.colorMult);
+      ITERATIONS = Number(this.iterations);
 
       if (this.colorMap) {
         getColor = getColorNormal;
@@ -165,5 +169,5 @@ const app = new Vue({
 
       window.requestAnimationFrame(draw);
     }
-  }
+  },
 });

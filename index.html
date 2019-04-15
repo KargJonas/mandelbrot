@@ -29,6 +29,12 @@
     <label for="colormap">Use Normal Color-Mapping</label>
     <br>
     <br>
+
+    <h3>Iterations</h3>
+    <p>(Watch out - high values take very long to render)</p>
+    <input placeholder="Amount of iterations pre pixel" v-model="iterations">
+    <br>
+    <br>
     <button v-on:click="apply()">Apply</button>
   </div>
   <script src="vue.min.js"></script>
