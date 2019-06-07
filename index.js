@@ -7,7 +7,7 @@ void main(void) {
   gl_Position = vec4(position, 0, 1);
 }`;
 
-let zoom = 1;
+let zoom = 0.3;
 
 class Vector {
   constructor(x, y) {
@@ -26,6 +26,13 @@ class Vector {
     return new Vector(
       this.x + other.x,
       this.y + other.y
+    );
+  }
+
+  div(factor) {
+    return new Vector(
+      this.x / factor,
+      this.y / factor
     );
   }
 
@@ -74,7 +81,7 @@ class Mouse {
       );
 
       const delta = current.sub(this.last);
-      this.pos = this.pos.add(delta);
+      this.pos = this.pos.add(delta.div(zoom));
       this.last = current.clone();
     }
   }

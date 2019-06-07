@@ -1,13 +1,13 @@
-precision mediump float;
+precision highp float;
 uniform vec2 resolution;
 uniform vec2 mousePos;
 uniform float zoom;
 
-#define TWO_PI     6.2831853
-#define QUARTER_PI 0.7853981
-#define EIGHT_PI   0.3926990
+#define TWO_PI      6.2831853
+#define QUARTER_PI  0.7853981
+#define EIGHT_PI    0.3926990
 
-#define MAX_STEPS  30
+#define MAX_STEPS   10000
 
 struct Complex {
   float r;
@@ -58,9 +58,17 @@ vec3 getColor(Complex p) {
 
 void main() {
   vec2 pos = gl_FragCoord.xy / resolution.y;
-  // pos = pos * 2.0 - 1.0;
   pos = pos - 0.5;
 
-  vec3 color = getColor(Complex((pos.x) / zoom +  mousePos.x, (pos.y) / zoom  + mousePos.y));
+  // vec3 color = getColor(Complex(
+  //   (pos.x + mousePos.x) / zoom,
+  //   (pos.y + mousePos.y) / zoom
+  // ));
+
+  vec3 color = getColor(Complex(
+    pos.x / zoom + mousePos.x,
+    pos.y / zoom + mousePos.y
+  ));
+
   gl_FragColor = vec4(color, 1.0);
  }
