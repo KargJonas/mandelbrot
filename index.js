@@ -61,12 +61,11 @@ class Mouse {
   }
 
   down(e) {
+    this.isDown = true;
     this.last = new Vector(
       1 - e.clientX / innerWidth,
       e.clientY / innerHeight
     );
-
-    this.isDown = true;
   }
 
   up() {
@@ -75,6 +74,8 @@ class Mouse {
 
   move(e) {
     if (this.isDown) {
+      change();
+
       const current = new Vector(
         1 - e.clientX / innerWidth,
         e.clientY / innerHeight
@@ -87,21 +88,27 @@ class Mouse {
   }
 }
 
-const mouse = new Mouse();
+function change() {
+  gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), window.innerWidth, window.innerHeight);
+  gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
+  gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
+}
 
+const mouse = new Mouse();
 window.addEventListener("mousewheel", (e) => {
-  if (e.wheelDelta < 0) {
-    zoom /= 1.05
-  } else {
-    zoom *= 1.05;
-  }
+  if (e.wheelDelta < 0) zoom /= 1.05;
+  else zoom *= 1.05;
+  change();
+});
+
+addEventListener("resize", () => {
+  change();
+  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
 });
 
 function update() {
   cnv.width = window.innerWidth;
   cnv.height = window.innerHeight;
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
-  gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
   gl.drawArrays(5, 0, 4);
   requestAnimationFrame(update);
 }
@@ -140,9 +147,9 @@ async function run() {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(0);
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), window.innerWidth, window.innerHeight);
   gl.viewport(0, 0, window.innerWidth, window.innerHeight);
 
+  change();
   update();
 }
 

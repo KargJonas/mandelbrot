@@ -7,7 +7,7 @@ uniform float zoom;
 #define QUARTER_PI  0.7853981
 #define EIGHT_PI    0.3926990
 
-#define MAX_STEPS   10000
+#define MAX_STEPS   1000
 
 struct Complex {
   float r;
@@ -59,11 +59,6 @@ vec3 getColor(Complex p) {
 void main() {
   vec2 pos = gl_FragCoord.xy / resolution.y;
   pos = pos - 0.5;
-
-  // vec3 color = getColor(Complex(
-  //   (pos.x + mousePos.x) / zoom,
-  //   (pos.y + mousePos.y) / zoom
-  // ));
 
   vec3 color = getColor(Complex(
     pos.x / zoom + mousePos.x,

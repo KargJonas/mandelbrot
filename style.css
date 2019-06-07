@@ -2,18 +2,20 @@ body {
   margin: 0;
 }
 
-/* canvas { */
-  /* position: fixed;
-  width: 100vw;
-  height: 100vh; */
-  /* image-rendering: -moz- crisp-edges;
-  image-rendering: -webkit- optimize-contrast;
-  image-rendering: -o- crisp-edges;
-  image-rendering: pixelated;
-  -ms-interpolation-mode: nearest-neighbor */
-/* } */
-
 canvas {
   position: fixed;
   transform: rotate3d(0, 0, 0);
+}
+
+h1 {
+  position: fixed;
+  color: #fff;
+  font-family: sans-serif, monospace;
+  bottom: 0;
+  margin: 0 0 3px 0;
+  font-size: 1.5em;
+  text-align: center;
+  width: 100vw;
+  opacity: 0.4;
+  user-select: none;
 }
