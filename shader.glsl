@@ -61,6 +61,6 @@ void main() {
   // pos = pos * 2.0 - 1.0;
   pos = pos - 0.5;
 
-  vec3 color = getColor(Complex((pos.x + mousePos.x) / zoom, (pos.y + mousePos.y) / zoom));
+  vec3 color = getColor(Complex((pos.x) / zoom +  mousePos.x, (pos.y) / zoom  + mousePos.y));
   gl_FragColor = vec4(color, 1.0);
  }

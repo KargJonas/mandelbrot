@@ -48,12 +48,17 @@ class Mouse {
     this.last = new Vector(0, 0);
     this.isDown = false;
 
-    addEventListener("mousedown", () => this.down());
+    addEventListener("mousedown", (e) => this.down(e));
     addEventListener("mouseup", () => this.up());
     addEventListener("mousemove", (e) => this.move(e));
   }
 
-  down() {
+  down(e) {
+    this.last = new Vector(
+      1 - e.clientX / innerWidth,
+      e.clientY / innerHeight
+    );
+
     this.isDown = true;
   }
 
@@ -69,9 +74,8 @@ class Mouse {
       );
 
       const delta = current.sub(this.last);
-      this.last = current.clone();
-
       this.pos = this.pos.add(delta);
+      this.last = current.clone();
     }
   }
 }
@@ -80,9 +84,9 @@ const mouse = new Mouse();
 
 window.addEventListener("mousewheel", (e) => {
   if (e.wheelDelta < 0) {
-    zoom /= 1.1;
+    zoom /= 1.05
   } else {
-    zoom *= 1.1;
+    zoom *= 1.05;
   }
 });
 
