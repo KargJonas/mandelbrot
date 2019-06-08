@@ -1,3 +1,4 @@
+const precisionInput = document.querySelector("input");
 const cnv = document.querySelector("canvas");
 const gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl");
 const shaderProgram = gl.createProgram();
@@ -89,15 +90,16 @@ class Mouse {
 }
 
 function change() {
-  cnv.width = window.innerWidth;
-  cnv.height = window.innerHeight;
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), window.innerWidth, window.innerHeight);
+  cnv.width = innerWidth;
+  cnv.height = innerHeight;
+  gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), innerWidth, innerHeight);
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
   gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
+  gl.uniform1i(gl.getUniformLocation(shaderProgram, "steps"), Math.pow(precisionInput.value, 2));
 }
 
 const mouse = new Mouse();
-window.addEventListener("mousewheel", (e) => {
+addEventListener("mousewheel", (e) => {
   if (e.wheelDelta < 0) zoom /= 1.05;
   else zoom *= 1.05;
   change();
@@ -105,8 +107,10 @@ window.addEventListener("mousewheel", (e) => {
 
 addEventListener("resize", () => {
   change();
-  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+  gl.viewport(0, 0, innerWidth, innerHeight);
 });
+
+precisionInput.addEventListener("change", change);
 
 function update() {
   gl.drawArrays(5, 0, 4);
@@ -147,7 +151,7 @@ async function run() {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(0);
-  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+  gl.viewport(0, 0, innerWidth, innerHeight);
 
   change();
   update();

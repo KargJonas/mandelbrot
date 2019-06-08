@@ -19,3 +19,20 @@ h1 {
   opacity: 0.4;
   user-select: none;
 }
+
+input {
+  position: fixed;
+  top: 0;
+  left: 5px;
+  margin: 28px 0 0 0;
+  opacity: 0.7;
+  width: 200px;
+}
+
+input::before {
+  content: "Iterations";
+  color: #fff;
+  position: absolute;
+  font-size: 22px;
+  top: -26px;
+}
