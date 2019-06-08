@@ -3,6 +3,7 @@
 
 It uses WebGL/GLSL. (No support for touchscreens yet..)
 
-Try it out: !(https://karg-jonas.com/mandelbrot/No support for touchscreens yet..)
+Try it out: https://karg-jonas.com/mandelbrot/
 
+No support for touchscreens yet..
 ![example](example.png)
