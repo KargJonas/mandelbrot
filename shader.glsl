@@ -7,17 +7,19 @@ uniform float zoom;
 #define QUARTER_PI  0.7853981
 #define EIGHT_PI    0.3926990
 
-#define MAX_STEPS   1000
+#define MAX_STEPS   10000
 
 struct Complex {
   float r;
   float i;
 };
 
-Complex cMult(Complex a, Complex b) {
+
+
+Complex cPow(Complex a) {
   return Complex(
-    a.r * b.r - a.i * b.i,
-    a.r * b.i + b.r * a.i
+    a.r * a.r - a.i * a.i,
+    2.0 * (a.r * a.i)
   );
 }
 
@@ -39,7 +41,7 @@ Complex z(Complex c) {
   Complex current = Complex(0.0, 0.0);
 
   for (int i = 0; i < MAX_STEPS; i++) {
-    current = cAdd(cMult(current, current), c);
+    current = cAdd(cPow(current), c);
   }
 
   return current;
@@ -47,7 +49,7 @@ Complex z(Complex c) {
 
 vec3 getColor(Complex p) {
   Complex center = Complex(0.0, 0.0);
-  float x = log(cDist(z(p), center)) * TWO_PI;
+  float x = log(cDist(z(p), center));
 
   return vec3(
     1.0 - abs(sin(x)),

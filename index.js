@@ -89,6 +89,8 @@ class Mouse {
 }
 
 function change() {
+  cnv.width = window.innerWidth;
+  cnv.height = window.innerHeight;
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), window.innerWidth, window.innerHeight);
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
   gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
@@ -107,8 +109,6 @@ addEventListener("resize", () => {
 });
 
 function update() {
-  cnv.width = window.innerWidth;
-  cnv.height = window.innerHeight;
   gl.drawArrays(5, 0, 4);
   requestAnimationFrame(update);
 }
