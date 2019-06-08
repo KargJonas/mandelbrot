@@ -10,35 +10,10 @@
 </head>
 
 <body>
-  <canvas width="500" height="500"></canvas>
-  <div id="app">
-    <h3>Position</h3>
-    X: <input placeholder="Offset X" v-model="offsetX">
-    Y: <input placeholder="Offset Y" v-model="offsetY">
-    <br>
-    <br>
-
-    <h3>Zoom</h3>
-    <input placeholder="Zoom" v-model="scale">
-    <br>
-    <br>
-
-    <h3>Color Multiplier</h3>
-    <input placeholder="Color-Multiplier" v-model="colorMult">
-    <input type="checkbox" id="colormap" v-model="colorMap">
-    <label for="colormap">Use Normal Color-Mapping</label>
-    <br>
-    <br>
-
-    <h3>Iterations</h3>
-    <p>(Watch out - high values take very long to render)</p>
-    <input placeholder="Amount of iterations pre pixel" v-model="iterations">
-    <br>
-    <br>
-    <button v-on:click="apply()">Apply</button>
-  </div>
-  <script src="vue.min.js"></script>
-  <script src="main.js"></script>
+  <canvas></canvas>
+  <h1>Scroll to zoom, click and drag to move around.</h1>
+  <input type="range" min="1" max="100" step="1" value="7">
+  <script src="index.js"></script>
 </body>
 
 </html>
