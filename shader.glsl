@@ -41,7 +41,8 @@ vec3 getColor(vec2 p) {
 
 void main() {
   vec2 pos = gl_FragCoord.xy / resolution.y;
-  pos -= 0.5;
+  pos.x -= (resolution.x / resolution.y) / 2.0;
+  pos.y -= 0.5;
 
   vec3 color = getColor(pos / zoom + mousePos);
 
