@@ -10,6 +10,8 @@ void main(void) {
 
 let zoom = 0.3;
 
+addEventListener("pointerdown", (e) => e.preventDefault());
+
 class Vector {
   constructor(x, y) {
     this.x = x;
@@ -56,9 +58,9 @@ class Mouse {
     this.last = new Vector(0, 0);
     this.isDown = false;
 
-    addEventListener("mousedown", (e) => this.down(e));
-    addEventListener("mouseup", () => this.up());
-    addEventListener("mousemove", (e) => this.move(e));
+    addEventListener("pointerdown", (e) => this.down(e));
+    addEventListener("pointerup", () => this.up());
+    addEventListener("pointermove", (e) => this.move(e));
   }
 
   down(e) {
@@ -99,11 +101,6 @@ function change() {
 }
 
 const mouse = new Mouse();
-// addEventListener("mousewheel", (e) => {
-//   if (e.wheelDelta < 0) zoom /= 1.05;
-//   else zoom *= 1.05;
-//   change();
-// });
 addEventListener("wheel", (e) => {
   if (e.deltaY < 0) zoom /= 1.05;
   else zoom *= 1.05;
