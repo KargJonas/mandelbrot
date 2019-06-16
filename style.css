@@ -6,7 +6,6 @@ body {
 
 canvas {
   position: fixed;
-  transform: rotate3d(0, 0, 0);
 }
 
 h1 {
@@ -22,19 +21,20 @@ h1 {
   user-select: none;
 }
 
-input {
+div {
   position: fixed;
   top: 0;
   left: 5px;
-  margin: 28px 0 0 0;
-  opacity: 0.7;
+  opacity: 0.6;
+}
+
+input {
   width: 200px;
 }
 
-input::before {
-  content: "Iterations";
+p {
   color: #fff;
-  position: absolute;
-  font-size: 22px;
-  top: -26px;
+  font-size: 1.5em;
+  font-family: sans-serif, monospace;
+  margin: 0;
 }

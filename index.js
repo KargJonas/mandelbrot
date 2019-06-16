@@ -10,8 +10,6 @@ void main(void) {
 
 let zoom = 0.3;
 
-addEventListener("pointerdown", (e) => e.preventDefault());
-
 class Vector {
   constructor(x, y) {
     this.x = x;
