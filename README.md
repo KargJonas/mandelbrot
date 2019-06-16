@@ -3,7 +3,7 @@
 
 > The "compressed" branch contains the compressed version.
 
-It uses WebGL/GLSL. (No support for touchscreens yet..)
+It uses WebGL/GLSL.
 
 Try it out: https://jonas-karg.com/projects/mandelbrot/
 
