@@ -2,11 +2,7 @@ const precisionInput = document.querySelector("input");
 const cnv = document.querySelector("canvas");
 const gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl");
 const shaderProgram = gl.createProgram();
-const vertexShaderText = `
-attribute vec2 position;
-void main(void) {
-  gl_Position = vec4(position, 0, 1);
-}`;
+const vertexShaderText = `attribute vec2 position;void main(void){gl_Position=vec4(position,0,1);}`;
 
 let zoom = 0.3;
 
