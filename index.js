@@ -3,7 +3,57 @@ let precisionInput = document.querySelector("input"),
   gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl"),
   shaderProgram = gl.createProgram(),
   vertexShaderText = `attribute vec2 position;void main(void){gl_Position=vec4(position,0,1);}`,
-  fragmentShaderText = `precision mediump float;uniform float h;uniform vec2 m;uniform float o;uniform int s;vec2 z(vec2 c){vec2 n=vec2(0.,0.);for(int i=0;i<3600;i++){if(i>s)break;n=vec2(n.x*n.x-n.y*n.y,2.*(n.x*n.y))+c;}return n;}vec3 g(vec2 p){float x=log(length(z(p)));return vec3(abs(sin(x)),abs(sin(x+.39)),abs(sin(x+.78)));}void main(){vec2 p=gl_FragCoord.xy/h;p-=.5;float x=log(length(z(p/o+m)));vec3 c=vec3(abs(sin(x)),abs(sin(x+.39)),abs(sin(x+.78)));gl_FragColor=vec4(c,1.);}`;
+  fragmentShaderText = `
+precision highp float;
+uniform float h;
+uniform vec2 m;
+uniform float o;
+uniform int s;
+
+#define TWO_PI      6.2831853
+#define QUARTER_PI  0.7853981
+#define EIGHT_PI    0.3926990
+
+#define MAX_STEPS   1000
+
+// Square a complex number
+vec2 cSquare(vec2 a) {
+  return vec2(
+    a.x * a.x - a.y * a.y,
+    2.0 * (a.x * a.y)
+  );
+}
+
+vec2 z(vec2 c) {
+  vec2 current = vec2(0.0, 0.0);
+
+  for (int i = 0; i < MAX_STEPS; i++) {
+    if (i > steps) break;
+    current = cSquare(current) + c;
+  }
+
+  return current;
+}
+
+vec3 getColor(vec2 p) {
+  float x = log(length(z(p)));
+
+  return vec3(
+    1.0 - abs(sin(x)),
+    1.0 - abs(sin(x + EIGHT_PI)),
+    1.0 - abs(sin(x + QUARTER_PI))
+  );
+}
+
+void main() {
+  vec2 pos = gl_FragCoord.xy / resolution.y;
+  pos.x -= (resolution.x / resolution.y) / 2.0;
+  pos.y -= 0.5;
+
+  vec3 color = getColor(pos / zoom + mousePos);
+
+  gl_FragColor = vec4(color, 1.0);
+ }`;
 
 let zoom = 0.3,
   width = innerWidth,
