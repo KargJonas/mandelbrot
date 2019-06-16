@@ -2,58 +2,52 @@ let precisionInput = document.querySelector("input"),
   cnv = document.querySelector("canvas"),
   gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl"),
   shaderProgram = gl.createProgram(),
-  vertexShaderText = `attribute vec2 position;void main(void){gl_Position=vec4(position,0,1);}`,
+  vertexShaderText = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`,
   fragmentShaderText = `
-precision highp float;
-uniform float h;
-uniform vec2 m;
-uniform float o;
-uniform int s;
+    precision highp float;
+    uniform vec2 r;
+    uniform vec2 m;
+    uniform float o;
+    uniform int s;
 
-#define TWO_PI      6.2831853
-#define QUARTER_PI  0.7853981
-#define EIGHT_PI    0.3926990
+    // Square a complex number
+    vec2 cSquare(vec2 a) {
+      return vec2(
+        a.x * a.x - a.y * a.y,
+        2.0 * (a.x * a.y)
+      );
+    }
 
-#define MAX_STEPS   1000
+    vec2 z(vec2 c) {
+      vec2 current = vec2(0., 0.);
 
-// Square a complex number
-vec2 cSquare(vec2 a) {
-  return vec2(
-    a.x * a.x - a.y * a.y,
-    2.0 * (a.x * a.y)
-  );
-}
+      for (int i = 0; i < 3600; i++) {
+        if (i > s) break;
+        current = cSquare(current) + c;
+      }
 
-vec2 z(vec2 c) {
-  vec2 current = vec2(0.0, 0.0);
+      return current;
+    }
 
-  for (int i = 0; i < MAX_STEPS; i++) {
-    if (i > steps) break;
-    current = cSquare(current) + c;
-  }
+    vec3 getColor(vec2 p) {
+      float x = log(length(z(p)));
 
-  return current;
-}
+      return vec3(
+        1. - abs(sin(x)),
+        1. - abs(sin(x + .39)),
+        1. - abs(sin(x + .78))
+      );
+    }
 
-vec3 getColor(vec2 p) {
-  float x = log(length(z(p)));
+    void main() {
+      vec2 pos = gl_FragCoord.xy / r.y;
+      pos.x -= (r.x / r.y) / 2.;
+      pos.y -= .5;
 
-  return vec3(
-    1.0 - abs(sin(x)),
-    1.0 - abs(sin(x + EIGHT_PI)),
-    1.0 - abs(sin(x + QUARTER_PI))
-  );
-}
-
-void main() {
-  vec2 pos = gl_FragCoord.xy / resolution.y;
-  pos.x -= (resolution.x / resolution.y) / 2.0;
-  pos.y -= 0.5;
-
-  vec3 color = getColor(pos / zoom + mousePos);
-
-  gl_FragColor = vec4(color, 1.0);
- }`;
+      vec3 color = getColor(pos / o + m);
+      gl_FragColor = vec4(color, 1.);
+    }
+  `;
 
 let zoom = 0.3,
   width = innerWidth,
@@ -61,14 +55,16 @@ let zoom = 0.3,
 
 let x = y = lx = ly = down = 0;
 
-addEventListener("pointerdown", (e) => {
+const a = addEventListener;
+
+a("pointerdown", (e) => {
   down = 1;
   lx = 1 - e.clientX / width;
   ly = e.clientY / height;
 });
 
-addEventListener("pointerup", () => down = 0);
-addEventListener("pointermove", (e) => {
+a("pointerup", () => down = 0);
+a("pointermove", (e) => {
   if (down) {
     change();
     let cx = 1 - e.clientX / width;
@@ -89,19 +85,19 @@ function change() {
   height = innerHeight;
   cnv.width = width;
   cnv.height = height;
-  gl.uniform1f(g(shaderProgram, "h"), height);
+  gl.uniform2f(g(shaderProgram, "r"), width, height);
   gl.uniform2f(g(shaderProgram, "m"), x, y);
   gl.uniform1f(g(shaderProgram, "o"), zoom);
   gl.uniform1i(g(shaderProgram, "s"), Math.pow(precisionInput.value, 2));
 }
 
-addEventListener("wheel", (e) => {
+a("wheel", (e) => {
   if (e.deltaY < 0) zoom /= 1.05;
   else zoom *= 1.05;
   change();
 });
 
-addEventListener("resize", () => {
+a("resize", () => {
   gl.uniform1f(g(shaderProgram, "h"), height);
   gl.viewport(0, 0, width, height);
 });
@@ -118,6 +114,10 @@ function generateShader(type, shaderText) {
 
   gl.shaderSource(shader, shaderText);
   gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(shader));
+  }
+
   gl.attachShader(shaderProgram, shader);
 }
 
