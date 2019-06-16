@@ -99,11 +99,6 @@ function change() {
 }
 
 const mouse = new Mouse();
-// addEventListener("mousewheel", (e) => {
-//   if (e.wheelDelta < 0) zoom /= 1.05;
-//   else zoom *= 1.05;
-//   change();
-// });
 addEventListener("wheel", (e) => {
   if (e.deltaY < 0) zoom /= 1.05;
   else zoom *= 1.05;
