@@ -1,100 +1,50 @@
-const precisionInput = document.querySelector("input");
-const cnv = document.querySelector("canvas");
-const gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl");
-const shaderProgram = gl.createProgram();
-const vertexShaderText = `attribute vec2 position;void main(void){gl_Position=vec4(position,0,1);}`;
+let precisionInput = document.querySelector("input"),
+  cnv = document.querySelector("canvas"),
+  gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl"),
+  shaderProgram = gl.createProgram(),
+  vertexShaderText = `attribute vec2 position;void main(void){gl_Position=vec4(position,0,1);}`,
+  fragmentShaderText = `precision mediump float;uniform float h;uniform vec2 m;uniform float o;uniform int s;vec2 z(vec2 c){vec2 n=vec2(0.,0.);for(int i=0;i<3600;i++){if(i>s)break;n=vec2(n.x*n.x-n.y*n.y,2.*(n.x*n.y))+c;}return n;}vec3 g(vec2 p){float x=log(length(z(p)));return vec3(abs(sin(x)),abs(sin(x+.39)),abs(sin(x+.78)));}void main(){vec2 p=gl_FragCoord.xy/h;p-=.5;float x=log(length(z(p/o+m)));vec3 c=vec3(abs(sin(x)),abs(sin(x+.39)),abs(sin(x+.78)));gl_FragColor=vec4(c,1.);}`;
 
-let zoom = 0.3;
+let zoom = 0.3,
+  width = innerWidth,
+  height = innerHeight;
 
-class Vector {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+let x = y = lx = ly = down = 0;
+
+addEventListener("pointerdown", (e) => {
+  down = 1;
+  lx = 1 - e.clientX / width;
+  ly = e.clientY / height;
+});
+
+addEventListener("pointerup", () => down = 0);
+addEventListener("pointermove", (e) => {
+  if (down) {
+    change();
+    let cx = 1 - e.clientX / width;
+    let cy = e.clientY / height;
+    let dx = cx - lx;
+    let dy = cy - ly;
+    x += dx / zoom;
+    y += dy / zoom;
+    lx = cx;
+    ly = cy;
   }
+});
 
-  sub(other) {
-    return new Vector(
-      this.x - other.x,
-      this.y - other.y
-    );
-  }
-
-  add(other) {
-    return new Vector(
-      this.x + other.x,
-      this.y + other.y
-    );
-  }
-
-  div(factor) {
-    return new Vector(
-      this.x / factor,
-      this.y / factor
-    );
-  }
-
-  clone() {
-    return new Vector(
-      this.x,
-      this.y
-    );
-  }
-}
-
-/**
- * Not a conventional mouse!
- * Click-to drag. Position can
- * be outside of the document.
- */
-class Mouse {
-  constructor() {
-    this.pos = new Vector(0, 0);
-    this.last = new Vector(0, 0);
-    this.isDown = false;
-
-    addEventListener("pointerdown", (e) => this.down(e));
-    addEventListener("pointerup", () => this.up());
-    addEventListener("pointermove", (e) => this.move(e));
-  }
-
-  down(e) {
-    this.isDown = true;
-    this.last = new Vector(
-      1 - e.clientX / innerWidth,
-      e.clientY / innerHeight
-    );
-  }
-
-  up() {
-    this.isDown = false;
-  }
-
-  move(e) {
-    if (this.isDown) {
-      change();
-
-      const current = new Vector(
-        1 - e.clientX / innerWidth,
-        e.clientY / innerHeight
-      );
-
-      const delta = current.sub(this.last);
-      this.pos = this.pos.add(delta.div(zoom));
-      this.last = current.clone();
-    }
-  }
-}
+const g = (a, b) => gl.getUniformLocation(a, b);
 
 function change() {
-  cnv.width = innerWidth;
-  cnv.height = innerHeight;
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "resolution"), innerWidth, innerHeight);
-  gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
-  gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
-  gl.uniform1i(gl.getUniformLocation(shaderProgram, "steps"), Math.pow(precisionInput.value, 2));
+  width = innerWidth;
+  height = innerHeight;
+  cnv.width = width;
+  cnv.height = height;
+  gl.uniform1f(g(shaderProgram, "h"), height);
+  gl.uniform2f(g(shaderProgram, "m"), x, y);
+  gl.uniform1f(g(shaderProgram, "o"), zoom);
+  gl.uniform1i(g(shaderProgram, "s"), Math.pow(precisionInput.value, 2));
 }
 
-const mouse = new Mouse();
 addEventListener("wheel", (e) => {
   if (e.deltaY < 0) zoom /= 1.05;
   else zoom *= 1.05;
@@ -102,8 +52,8 @@ addEventListener("wheel", (e) => {
 });
 
 addEventListener("resize", () => {
-  change();
-  gl.viewport(0, 0, innerWidth, innerHeight);
+  gl.uniform1f(g(shaderProgram, "h"), height);
+  gl.viewport(0, 0, width, height);
 });
 
 precisionInput.addEventListener("change", change);
@@ -114,43 +64,31 @@ function update() {
 }
 
 function generateShader(type, shaderText) {
-  const shader = gl.createShader(type);
+  let shader = gl.createShader(type);
 
   gl.shaderSource(shader, shaderText);
   gl.compileShader(shader);
-
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-  }
-
   gl.attachShader(shaderProgram, shader);
 }
 
-async function run() {
-  const fragmentShaderText = await fetch("shader.glsl")
-    .then((response) => (response.text()));
+generateShader(35633, vertexShaderText);
+generateShader(35632, fragmentShaderText);
 
-  generateShader(gl.VERTEX_SHADER, vertexShaderText);
-  generateShader(gl.FRAGMENT_SHADER, fragmentShaderText);
+gl.linkProgram(shaderProgram);
+gl.useProgram(shaderProgram);
 
-  gl.linkProgram(shaderProgram);
-  gl.useProgram(shaderProgram);
+let vertices = [
+  -1, -1,
+  -1, +1,
+  +1, -1,
+  +1, +1
+];
 
-  const vertices = [
-    -1, -1,
-    -1, +1,
-    +1, -1,
-    +1, +1
-  ];
+gl.bindBuffer(34962, gl.createBuffer());
+gl.bufferData(34962, new Float32Array(vertices), 35044);
+gl.vertexAttribPointer(0, 2, 5126, 0, 0, 0);
+gl.enableVertexAttribArray(0);
+gl.viewport(0, 0, width, height);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(0);
-  gl.viewport(0, 0, innerWidth, innerHeight);
-
-  change();
-  update();
-}
-
-run();
+change();
+update();
