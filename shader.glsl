@@ -28,8 +28,9 @@ vec2 z(vec2 c) {
     current = cSquare(current) + c;
     dori = length(current);
 
-    if (dori > 2.0) {
-      _steps -= 20;
+    if (dori > 3.0) {
+      _steps /= 2;
+      // _steps /= log(10, steps);
       // current /= (dori / 6.0);
     }
   }
@@ -47,9 +48,9 @@ vec3 getColor(vec2 p) {
   // return vec3(1.0);
 
   return vec3(
-    1.0 - abs(sin(x)),
-    1.0 - abs(sin(x + EIGHT_PI)),
-    1.0 - abs(sin(x + QUARTER_PI))
+    1.0 - abs(sin(x * 0.05)),
+    1.0 - abs(sin(x * 0.05 + EIGHT_PI)),
+    1.0 - abs(sin(x * 0.05 + QUARTER_PI))
   );
 }
 
