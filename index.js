@@ -62,6 +62,7 @@ class Mouse {
   }
 
   down(e) {
+    if (e.srcElement.tagName === "INPUT") return;
     this.isDown = true;
     this.last = new Vector(
       1 - e.clientX / innerWidth,

@@ -20,10 +20,18 @@ vec2 cSquare(vec2 a) {
 
 vec2 z(vec2 c) {
   vec2 current = vec2(0.0, 0.0);
+  float dori; // Distance from origin
+  int _steps = steps;
 
   for (int i = 0; i < MAX_STEPS; i++) {
-    if (i > steps) break;
+    if (i > _steps) break;
     current = cSquare(current) + c;
+    dori = length(current);
+
+    if (dori > 2.0) {
+      _steps -= 20;
+      // current /= (dori / 6.0);
+    }
   }
 
   return current;
@@ -31,6 +39,12 @@ vec2 z(vec2 c) {
 
 vec3 getColor(vec2 p) {
   float x = log(length(z(p)));
+
+  if (x <= 1.0) {
+    return vec3(0.0);
+  }
+
+  // return vec3(1.0);
 
   return vec3(
     1.0 - abs(sin(x)),
