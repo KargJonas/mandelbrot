@@ -3,6 +3,7 @@ uniform vec2 resolution;
 uniform vec2 mousePos;
 uniform float zoom;
 uniform int steps;
+uniform float colorShift;
 
 #define TWO_PI      6.2831853
 #define QUARTER_PI  0.7853981
@@ -29,9 +30,7 @@ vec2 z(vec2 c) {
     dori = length(current);
 
     if (dori > 3.0) {
-      _steps /= 2;
-      // _steps /= log(10, steps);
-      // current /= (dori / 6.0);
+      _steps /= int(dori);
     }
   }
 
@@ -48,9 +47,9 @@ vec3 getColor(vec2 p) {
   // return vec3(1.0);
 
   return vec3(
-    1.0 - abs(sin(x * 0.05)),
-    1.0 - abs(sin(x * 0.05 + EIGHT_PI)),
-    1.0 - abs(sin(x * 0.05 + QUARTER_PI))
+    (1.0 + sin(x * colorShift)) / 2.0,
+    (1.0 + sin(x * colorShift + EIGHT_PI)) / 2.0,
+    (1.0 + sin(x * colorShift + QUARTER_PI)) / 2.0
   );
 }
 

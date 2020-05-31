@@ -29,6 +29,14 @@ input {
   width: 200px;
 }
 
+#color-shift {
+  top: 60px;
+}
+
+#color-shift::before {
+  content: "Color Shift";
+}
+
 input::before {
   content: "Iterations";
   color: #fff;

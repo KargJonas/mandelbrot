@@ -1,4 +1,5 @@
-const precisionInput = document.querySelector("input");
+const precisionInput = document.querySelector("#precision");
+const colorShiftInput = document.querySelector("#color-shift");
 const cnv = document.querySelector("canvas");
 const gl = cnv.getContext("webgl") || cnv.getContext("experimental-webgl");
 const shaderProgram = gl.createProgram();
@@ -97,6 +98,7 @@ function change() {
   gl.uniform2f(gl.getUniformLocation(shaderProgram, "mousePos"), mouse.pos.x, mouse.pos.y);
   gl.uniform1f(gl.getUniformLocation(shaderProgram, "zoom"), zoom);
   gl.uniform1i(gl.getUniformLocation(shaderProgram, "steps"), Math.pow(precisionInput.value, 2));
+  gl.uniform1f(gl.getUniformLocation(shaderProgram, "colorShift"), Math.pow(colorShiftInput.value, 2));
 }
 
 const mouse = new Mouse();
@@ -112,6 +114,7 @@ addEventListener("resize", () => {
 });
 
 precisionInput.addEventListener("change", change);
+colorShiftInput.addEventListener("change", change);
 
 function update() {
   gl.drawArrays(5, 0, 4);
@@ -125,7 +128,7 @@ function generateShader(type, shaderText) {
   gl.compileShader(shader);
 
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
+    throw gl.getShaderInfoLog(shader);
   }
 
   gl.attachShader(shaderProgram, shader);
@@ -159,3 +162,14 @@ async function run() {
 }
 
 run();
+
+let time = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.01;
+  change();
+  colorShiftInput.value = (1 + Math.sin(time)) / 2;
+}
+
+// animate();
